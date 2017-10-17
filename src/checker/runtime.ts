@@ -588,16 +588,6 @@ function createChecker(receive: (cb: (msg: Req) => void) => void, send: (msg: Re
         return filePath;
     }
 
-    // function isPreferredFilePath(filePath: string)
-    // {
-    //     if (!loaderConfig.preferredFilePrefix)
-    //     {
-    //         return false;
-    //     }
-    //     let nonPreferredFileName = getNonPreferredFilePath(filePath);
-    //     return nonPreferredFileName !== filePath;
-    // }
-
     receive(function (req: Req) {
         try {
             switch (req.type) {
