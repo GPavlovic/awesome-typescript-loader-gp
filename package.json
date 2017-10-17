@@ -1,6 +1,6 @@
 {
-  "name": "awesome-typescript-loader",
-  "version": "3.2.3",
+  "name": "awesome-typescript-loader-gp",
+  "version": "3.2.4",
   "description": "Awesome TS loader for webpack",
   "main": "dist/entry.js",
   "typings": "./dist/index.d.ts",
@@ -15,10 +15,10 @@
     "release": "standard-version",
     "test": "rimraf .test && mocha --timeout 30000 dist/__test__"
   },
-  "author": "Stanislav Panferov <fnight.m@gmail.com> (http://panferov.me/)",
+  "author": "Goran Pavlovic <gp.goranpavlovic@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/s-panferov/awesome-typescript-loader.git"
+    "url": "https://github.com/GPavlovic/awesome-typescript-loader-gp"
   },
   "license": "MIT",
   "keywords": [
@@ -28,9 +28,9 @@
     "typescript"
   ],
   "bugs": {
-    "url": "https://github.com/s-panferov/awesome-typescript-loader/issues"
+    "url": "https://github.com/GPavlovic/awesome-typescript-loader-gp/issues"
   },
-  "homepage": "https://github.com/s-panferov/awesome-typescript-loader",
+  "homepage": "https://github.com/GPavlovic/awesome-typescript-loader-gp",
   "dependencies": {
     "colors": "^1.1.2",
     "enhanced-resolve": "3.3.0",
@@ -62,7 +62,7 @@
     "standard-version": "^4.2.0",
     "temp": "^0.8.3",
     "tslint": "^5.4.3",
-    "typescript": "^2.4.1",
+    "typescript": "2.4.1",
     "webpack": "~2.7.0"
   }
 }

@@ -1,4 +1,4 @@
-import * as ts from 'typescript';
+import * as ts from "typescript";
 
 export interface CompilerInfo {
     compilerPath: string;
@@ -26,6 +26,7 @@ export interface LoaderConfig {
     debug?: boolean;
     reportFiles?: string[];
     context?: string;
+    preferredFilePrefix?: string;
     getCustomTransformers?(): ts.CustomTransformers | undefined;
 }
 

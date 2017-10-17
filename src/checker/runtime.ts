@@ -29,16 +29,16 @@ if (!module.parent) {
         console.log("[Inside 'uncaughtException' event] ", err.message, err.stack);
     });
 
-    process.on('disconnect', function () {
+    process.on("disconnect", function () {
         process.exit();
     });
 
-    process.on('exit', () => {
+    process.on("exit", () => {
         // console.log('EXIT RUNTIME');
     });
 
     createChecker(
-        process.on.bind(process, 'message'),
+        process.on.bind(process, "message"),
         process.send.bind(process)
     );
 } else {
@@ -58,7 +58,7 @@ if (!module.parent) {
 
         return {
             on: (type: string, cb) => {
-                if (type === 'message') {
+                if (type === "message") {
                     receive = cb;
                 }
             },
@@ -279,7 +279,7 @@ function createChecker(receive: (cb: (msg: Req) => void) => void, send: (msg: Re
         webpackOptions = payload.webpackOptions;
         context = payload.context;
 
-        instanceName = loaderConfig.instance || 'at-loader';
+        instanceName = loaderConfig.instance || "at-loader";
 
         host = new Host(compilerOptions.allowJs
             ? TS_AND_JS_FILES
@@ -289,7 +289,9 @@ function createChecker(receive: (cb: (msg: Req) => void) => void, send: (msg: Re
         service = compiler.createLanguageService(host);
 
         compilerConfig.fileNames.forEach(fileName => {
-            const text = compiler.sys.readFile(fileName);
+            let preferredFileName = getPreferredFilePath(fileName);
+            let text: string = compiler.sys.readFile(preferredFileName);
+
             if (!text) { return; }
             files.set(fileName, {
                 fileName,
@@ -323,18 +325,39 @@ function createChecker(receive: (cb: (msg: Req) => void) => void, send: (msg: Re
     }
 
     function updateFile(fileName: string, text: string, ifExist = false) {
-        const file = files.get(fileName);
+        const preferredFileName = getPreferredFilePath(fileName);
+        const nonPreferredFileName = getNonPreferredFilePath(fileName);
+        const file = files.get(preferredFileName);
         if (file) {
             let updated = false;
-            if (file.fileName !== fileName) {
+            // If the file name does not match, but no preferred file was found
+            if (file.fileName !== fileName
+                && fileName === preferredFileName) {
                 if (caseInsensitive) {
                     file.fileName = fileName; // use most recent name for case-sensitive file systems
                     updated = true;
-                } else {
+                }
+                // Only want to update the contents of the file if it has no preferred source
+                else if (fileName === preferredFileName)
+                {
                     removeFile(file.fileName);
                     projectVersion++;
                     files.set(fileName, {
                         fileName,
+                        text,
+                        version: 0,
+                        snapshot: compiler.ScriptSnapshot.fromString(text)
+                    });
+                    return;
+                }
+                // If the preferred file was updated, need to update
+                else if (fileName === preferredFileName
+                        && fileName !== nonPreferredFileName)
+                {
+                    removeFile(file.fileName);
+                    projectVersion++;
+                    files.set(nonPreferredFileName, {
+                        fileName: nonPreferredFileName,
                         text,
                         version: 0,
                         snapshot: compiler.ScriptSnapshot.fromString(text)
@@ -469,14 +492,14 @@ function createChecker(receive: (cb: (msg: Req) => void) => void, send: (msg: Re
         const processedDiagnostics = allDiagnostics
             .filter(diag => !ignoreDiagnostics[diag.code])
             .map(diagnostic => {
-                const message = compiler.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+                const message = compiler.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
                 let fileName = diagnostic.file && path.relative(context, diagnostic.file.fileName);
 
-                if (fileName && fileName[0] !== '.') {
-                    fileName = './' + toUnix(fileName);
+                if (fileName && fileName[0] !== ".") {
+                    fileName = "./" + toUnix(fileName);
                 }
 
-                let pretty = '';
+                let pretty = "";
                 let line = 0;
                 let character = 0;
                 let code = diagnostic.code;
@@ -520,6 +543,60 @@ function createChecker(receive: (cb: (msg: Req) => void) => void, send: (msg: Re
             payload
         } as Res);
     }
+
+    function getPreferredFilePath(filePath: string): string
+    {
+        // We have been provided a preferred file prefix
+        if (loaderConfig.preferredFilePrefix)
+        {
+            let filePathArray = filePath.split("/");
+            // Do not want to process deps
+            if (!filePathArray.some(x => x == "node_modules"))
+            {
+                // Alter the file path by adding a prefix folder, and adding a prefix to the filename
+                filePathArray[filePathArray.length - 1] = loaderConfig.preferredFilePrefix + "." + filePathArray[filePathArray.length - 1];
+                // Rejoin to get the new file path
+                let preferredFilePath = filePathArray.join("/");
+                // Check if the preferred path exists
+                if (compiler.sys.fileExists(preferredFilePath))
+                {
+                    // Load the preferred file
+                    return preferredFilePath;
+                    // console.log("\nPREFERRED FILE CONTENTS " + preferredFilePath + ": " + text + "\n");
+                }
+            }
+        }
+        return filePath;
+    }
+
+    function getNonPreferredFilePath(filePath: string): string
+    {
+        if (!loaderConfig.preferredFilePrefix)
+        {
+            return filePath;
+        }
+        let filePathArray = filePath.split("/");
+        // Alter the file path by adding a prefix folder, and adding a prefix to the filename
+        if (filePathArray[filePathArray.length - 1].startsWith(loaderConfig.preferredFilePrefix + "."))
+        {
+            // Get the original file name.
+            let fileName = filePathArray.pop().slice(loaderConfig.preferredFilePrefix.length + 1);
+            // Add the original filename back
+            filePathArray.push(fileName);
+            return filePathArray.join("/");
+        }
+        return filePath;
+    }
+
+    // function isPreferredFilePath(filePath: string)
+    // {
+    //     if (!loaderConfig.preferredFilePrefix)
+    //     {
+    //         return false;
+    //     }
+    //     let nonPreferredFileName = getNonPreferredFilePath(filePath);
+    //     return nonPreferredFileName !== filePath;
+    // }
 
     receive(function (req: Req) {
         try {

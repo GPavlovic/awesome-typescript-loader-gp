@@ -1,11 +1,11 @@
-import { ChildProcess } from 'child_process';
+import { ChildProcess } from "child_process";
 
 export interface QueuedSender {
     send: (msg: any) => void;
 }
 
 const isWindows = /^win/.test(process.platform);
-const logOnError = error => { if (error) { console.error(error); } };
+const logOnError = (error: Error) => { if (error) { console.error(error); } };
 
 // Wrapper around process.send() that will queue any messages if the internal node.js
 // queue is filled with messages and only continue sending messages when the internal
@@ -17,7 +17,7 @@ export function createQueuedSender(childProcess: ChildProcess | NodeJS.Process):
         let msgQueue = [];
         let isSending = false;
 
-        const cb = error => {
+        const cb = (error: Error): void => {
             logOnError(error);
             if (msgQueue.length > 0) {
                 setImmediate(doSendLoop);
@@ -26,7 +26,7 @@ export function createQueuedSender(childProcess: ChildProcess | NodeJS.Process):
             }
         };
 
-        const doSendLoop = function(): void {
+        const doSendLoop = function() {
             childProcess.send(msgQueue.shift(), cb);
         };
 
