@@ -1,7 +1,7 @@
 {
   "name": "awesome-typescript-loader-gp",
-  "version": "3.2.4",
-  "description": "Awesome TS loader for webpack",
+  "version": "3.3.1",
+  "description": "Fork of Awesome TS loader for webpack",
   "main": "dist/entry.js",
   "typings": "./dist/index.d.ts",
   "scripts": {
@@ -18,7 +18,7 @@
   "author": "Goran Pavlovic <gp.goranpavlovic@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/GPavlovic/awesome-typescript-loader-gp"
+    "url": "https://github.com/CamisInc/awesome-typescript-loader-gp"
   },
   "license": "MIT",
   "keywords": [
@@ -28,9 +28,9 @@
     "typescript"
   ],
   "bugs": {
-    "url": "https://github.com/GPavlovic/awesome-typescript-loader-gp/issues"
+    "url": "https://github.com/CamisInc/awesome-typescript-loader-gp/issues"
   },
-  "homepage": "https://github.com/GPavlovic/awesome-typescript-loader-gp",
+  "homepage": "https://github.com/CamisInc/awesome-typescript-loader-gp",
   "dependencies": {
     "colors": "^1.1.2",
     "enhanced-resolve": "3.3.0",
