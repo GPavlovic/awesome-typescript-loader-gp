@@ -1,7 +1,4 @@
-# The best TypeScript loader for Webpack
-
-[![Join the chat at https://gitter.im/s-panferov/awesome-typescript-loader](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/s-panferov/awesome-typescript-loader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://travis-ci.org/s-panferov/awesome-typescript-loader.svg?branch=master)](https://travis-ci.org/s-panferov/awesome-typescript-loader)
+# A fork of the best TypeScript loader for Webpack
 
 ## Installation
 
@@ -172,6 +169,10 @@ reportFiles: [
     "src/**/*.{ts,tsx}"
 ]
 ```
+
+### preferredFilePrefix *(string) (default=undefined)*
+
+When provided, loader will search for a file with a name matching the pattern `prefix.filename`. If one is found, the contents of that file will replace the original file contents. If one is not found, the original file will be loaded.
 
 ## Compiler options
 
